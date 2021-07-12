@@ -1,6 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-
+const port = process.env.PORT;
 app.use(express.static("./public/templated-roadtrip"));
 
 app.get("/generic", function (req, res) {
@@ -10,4 +11,6 @@ app.get("/elements", function (req, res) {
   res.sendFile(__dirname + "/public/templated-roadtrip/elements.html");
 });
 
-app.listen(8080);
+app.listen(port, () => {
+  console.log(`Escuchando en el puerto http://localhost:${port}`);
+});
