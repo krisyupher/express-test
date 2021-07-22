@@ -1,14 +1,20 @@
 const { response, request } = require("express");
 const bcryptjs = require("bcryptjs");
 const User = require("../models/user");
-const userGet = (req, res = response) => {
+const userGet = async (req, res = response) => {
+  const { limite = 5, desde = 0 } = req.query;
+  /*   const listUsers = await User.find({ state: true })
+    .skip(Number(desde))
+    .limit(Number(limite));
+  const total = await User.countDocuments({ state: true }); */
+  /* Para mandar las peticiones al mismo tiempo usamos Promise.all */
+  const [listUsers, total] = await Promise.all([
+    User.find({ state: true }).skip(Number(desde)).limit(Number(limite)),
+    User.countDocuments({ state: true }),
+  ]);
   /* 	localhost:8081/user/?q=hola&edad=22 */
   const params = req.query;
-  res.status(403).json({
-    ok: true,
-    msg: "get API - controlador",
-    params,
-  });
+  res.json({ total, listUsers });
 };
 const userPost = async (req, res = response) => {
   const { name, email, password, role } = req.body;
@@ -35,13 +41,22 @@ const userPut = async (req, res = response) => {
   }
   const user = await User.findByIdAndUpdate(id, resto);
 
+  res.json(user);
+};
+const userDelete = async (req, res = response) => {
+  const { id } = req.params;
+
+  /* Eliminacion total - No recomendable*/
+  /* const userToDelete = await User.findByIdAndDelete(id); */
+
+  const userToDelete = await User.findByIdAndUpdate(id, { state: false });
   res.json({
-    ok: true,
-    user,
+    userToDelete,
   });
 };
 module.exports = {
   userGet,
   userPost,
   userPut,
+  userDelete,
 };

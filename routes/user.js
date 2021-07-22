@@ -6,7 +6,12 @@ const {
   emailValid,
   existeUserByIdValid,
 } = require("../helpers/validations");
-const { userGet, userPost, userPut } = require("../controllers/user");
+const {
+  userGet,
+  userPost,
+  userPut,
+  userDelete,
+} = require("../controllers/user");
 const { validarCampos } = require("../middleware/validate-fields");
 const router = Router();
 
@@ -38,6 +43,15 @@ router.put(
     validarCampos,
   ],
   userPut
+);
+router.delete(
+  "/:id",
+  [
+    check("id", "no es un ID valido").isMongoId(),
+    check("id").custom(existeUserByIdValid),
+    validarCampos,
+  ],
+  userDelete
 );
 
 module.exports = router;
