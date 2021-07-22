@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+const { dbConnection } = require("../database/config");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
-
+    //Coneccion a base de datos
+    this.conectarDB();
     //middlewares
     this.middlewares();
     //rutas
@@ -18,6 +20,9 @@ class Server {
     this.app.listen(this.port, () => {
       console.log(`Escuchando en el puerto http://localhost:${this.port}`);
     });
+  }
+  async conectarDB() {
+    await dbConnection();
   }
   middlewares() {
     this.app.use(cors());
